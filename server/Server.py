@@ -6,17 +6,32 @@ from flask import Flask, jsonify, request
 import subprocess
 import time
 import pymssql
+import os
+import asyncio
+import threading
 
 from Option import  Option
 
 
 
+#webpack = Webpack()
+
 
 # Flask初始化
 app = Flask(__name__)
 
+# def webpack():
+#     print('webpack...')
+#     os.system('webpack  --config ../webpack.config.js  --watch')
+#
+#
+# t=threading.Thread(target=webpack)
+# t.start()
+
 
 option=Option()
+
+
 
 #询价
 #请求格式：

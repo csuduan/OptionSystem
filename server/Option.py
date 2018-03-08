@@ -18,7 +18,7 @@ class Option(object):
     def __init__(self):
         #OptionSystemR初始化
         self.r = robjects.r
-        self.r.source("OptionSystem.R")
+        self.r.source("./OptionSystem.R")
         self.dos=OptionDos()
 
     def getEnquiry(self,stock,period,strikePercent,amount):
