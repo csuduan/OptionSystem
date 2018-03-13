@@ -8,7 +8,7 @@ class OptionDos(object):
     conn=None;
     def __init__(self):
         # Conn初始化
-        self.conn = pymssql.connect("192.168.1.10", "quant", "quant", "OptionSystem", charset='utf8')
+        self.conn = pymssql.connect("192.168.1.10", "quant", "quant", "OptionSystem", charset='cp936')
 
     def GetConn(self):
         #todo 连接状态检查
@@ -53,4 +53,52 @@ class OptionDos(object):
         cursor.execute(sql)
         trade = cursor.fetchone()
         return trade
+
+    def GetPagedTrade(self,page,pagesize,filters):
+        where='1=1 '
+        for key in filters:
+            if filters[key] !=None and filters[key]!='':
+                where+=f" and {key} = '{filters[key]}'"
+
+
+        cursor = self.GetConn().cursor()
+        offset=(page-1)*pagesize
+        sql = f"select * from  Trade where {where} order by no desc offset {offset} rows fetch next {pagesize} rows only  "
+        cursor.execute(sql)
+        trades = cursor.fetchall()
+        return trades
+
+    def GetTradeCount(self,filters):
+        where = '1=1 '
+        for key in filters:
+            if filters[key] != None and filters[key] != '':
+                where += f" and {key} = '{filters[key]}'"
+
+        cursor = self.GetConn().cursor()
+        sql = f"select count(0) from  Trade where {where}"
+        cursor.execute(sql)
+        tradeCount = cursor.fetchone()
+        return tradeCount[0]
+
+    def GetEnquiryCount(self):
+        cursor = self.GetConn().cursor()
+        sql = f"select count(0) from  enquiry "
+        cursor.execute(sql)
+        enquiryCount = cursor.fetchone()
+        return enquiryCount[0]
+
+    def GetPagedEnquiry(self,page,pagesize):
+        cursor = self.GetConn().cursor()
+        offset=(page-1)*pagesize
+        sql = f"select * from   enquiry order by no desc offset {offset} rows fetch next {pagesize} rows only  "
+        cursor.execute(sql)
+        enquirys = cursor.fetchall()
+        return enquirys
+
+    def UpdateTrade(self,tradeNo,tradeStatus,tradePrice,tradeAmount,tradeTms,tradeMsg):
+        conn = self.GetConn()
+        cursor = conn.cursor()
+        sql = f"update trade set status='{tradeStatus}',tradePrice='{tradePrice}',tradeAmount='{tradeAmount}',tradeTms='{tradeTms}',tradeMsg='{tradeMsg}' where no={tradeNo}  "
+        cursor.execute(sql)
+        conn.commit()
 

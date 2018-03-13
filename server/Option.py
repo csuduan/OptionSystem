@@ -73,8 +73,8 @@ class Option(object):
         date = time.strftime("%Y%m%d", time.localtime())
         tm = time.strftime("%H:%M", time.localtime())
         tmPeiod = time.strftime("%p", time.localtime())
-        if tm < "09:00" or tm > "14:00":
-            return  (-1," Forbid  trade,Now")
+        # if tm < "09:00" or tm > "14:00":
+        #     return  (-1," Forbid  trade,Now")
 
         code=data[3]
         period=data[4]
@@ -101,7 +101,7 @@ class Option(object):
            tradeNo       tradingDay   code        period    strikePct    Amount      custom
            {tradeNo}            {date}    {code}    {period}         {strikePct}        {amount}万      {custom}
          '''
-        SendEmail(msg)
+        #SendEmail(msg)
 
         return (0,tradeNo)
 
@@ -109,7 +109,11 @@ class Option(object):
     def tradeQry(self,custom,tradeNo):
         data = self.dos.GetTrade(tradeNo,custom)
 
+
         if data == None or data == []:
             return  (-1, "can not find trade Record!")
+
+        if data[2] != custom:
+            return (-1, "custom not match!")
 
         return (0,data)
