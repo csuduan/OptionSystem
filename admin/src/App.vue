@@ -23,6 +23,11 @@
             <i class="el-icon-setting"></i>
             <span slot="title">系统</span>
           </el-menu-item>
+
+          <el-menu-item index="/monitor">
+            <i class="el-icon-view"></i>
+            <span slot="title">监控</span>
+          </el-menu-item>
         </el-menu>
       </el-col>
 

@@ -6,6 +6,7 @@ import admin from '@/components/Admin'
 const enquiry = resolve => require(['@/components/Enquiry'], resolve)
 const trade = resolve => require(['@/components/Trade'], resolve)
 const setting = resolve => require(['@/components/Setting'], resolve)
+const monitor = resolve => require(['@/components/Monitor'], resolve)
 
 Vue.use(Router)
 
@@ -33,6 +34,11 @@ export default new Router({
       path: '/setting',
       name: 'setting',
       component: setting
+    },
+    {
+      path: '/monitor',
+      name: 'monitor',
+      component: monitor
     },
   ]
 })
