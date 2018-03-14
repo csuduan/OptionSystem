@@ -248,6 +248,36 @@ def editTrade():
     return jsonify(result)
     pass
 
+@app.route('/editSetting', methods=['POST'])
+def eidtSetting():
+    result = {
+        "errCode": 0,
+        "errMsg": "success",
+    }
+
+    data = request.json['params']
+    try:
+        admin.updateSetting(data['name'],data['value'])
+        option.loadSetting()
+
+    except Exception as ex:
+        result = {
+            "errCode": -1,
+            "errMsg": "update Error",
+        }
+    return jsonify(result)
+
+@app.route('/setting/list', methods=['GET'])
+def getSettings():
+    datas=admin.getSettings()
+    settings=[]
+    for data in datas:
+        settings.append({'name':data[1],'value':data[2]})
+
+    result = {'settings': settings}
+    return jsonify(result)
+
+
 
 
 

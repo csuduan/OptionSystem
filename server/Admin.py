@@ -27,3 +27,11 @@ class Admin(object):
     def updateTrade(self,tradeNo,tradeStatus,tradePrice,tradeAmount,tradeTms,tradeMsg):
         self.dos.UpdateTrade(tradeNo,tradeStatus,tradePrice,tradeAmount,tradeTms,tradeMsg)
         pass
+
+    def updateSetting(self,name,value):
+        self.dos.UpdateSetting(name,value)
+
+    def getSettings(self):
+        datas=self.dos.GetSetting()
+        return  datas
+

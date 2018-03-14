@@ -20,12 +20,14 @@ class Option(object):
         self.r = robjects.r
         self.r.source("./OptionSystem.R")
         self.dos=OptionDos()
+        self.setting={}
+        self.loadSetting()
 
     def getEnquiry(self,stock,period,strikePercent,amount):
         date = time.strftime("%Y%m%d", time.localtime())
         tm = time.strftime("%H:%M", time.localtime())
         tmPeiod = time.strftime("%p", time.localtime())
-        if tm < "09:00" or tm > "15:00":
+        if tm < self.setting['enquiryStart'] or tm > self.setting['enquiryEnd']:
             return  (-1,"Not trading time,Please try again later")
 
         #涨跌幅过大，重新计算报价
@@ -73,8 +75,8 @@ class Option(object):
         date = time.strftime("%Y%m%d", time.localtime())
         tm = time.strftime("%H:%M", time.localtime())
         tmPeiod = time.strftime("%p", time.localtime())
-        # if tm < "09:00" or tm > "14:00":
-        #     return  (-1," Forbid  trade,Now")
+        if tm < self.setting['tradeStart'] or tm > self.setting['tradeEnd']:
+            return  (-1," Forbid  trade,Now")
 
         code=data[3]
         period=data[4]
@@ -117,3 +119,13 @@ class Option(object):
             return (-1, "custom not match!")
 
         return (0,data)
+
+
+    def loadSetting(self):
+        datas=self.dos.GetSetting()
+        for data in datas:
+            self.setting[data[1]]=data[2]
+
+
+
+

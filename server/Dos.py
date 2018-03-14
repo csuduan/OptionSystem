@@ -102,3 +102,18 @@ class OptionDos(object):
         cursor.execute(sql)
         conn.commit()
 
+    def GetSetting(self):
+        cursor = self.GetConn().cursor()
+        sql = f"select * from  setting "
+        cursor.execute(sql)
+        settings = cursor.fetchall()
+        return settings
+
+    def UpdateSetting(self,name,value):
+        conn = self.GetConn()
+        cursor = conn.cursor()
+        sql = f"update setting set value='{value}' where name='{name}'  "
+        cursor.execute(sql)
+        conn.commit()
+
+

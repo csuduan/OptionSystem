@@ -29,3 +29,9 @@ export const getEnquiryListPage=params => {
 
 export const editTrade = params => {
   return axios.post(`/api/editTrade`, { params: params }); };
+
+export const getSettingList = params => {
+  return axios.get(`/api/setting/list`, { params: params }); };
+
+export const editSetting = params => {
+  return axios.post(`/api/editSetting`, { params: params }); };
