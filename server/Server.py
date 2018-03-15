@@ -12,13 +12,18 @@ import os
 import asyncio
 import threading
 import json
+import Util
 
-from Option import  Option
-from Admin  import  Admin
+from Option import Option
+from Admin import Admin
 
+import logging
 
+logger = logging.getLogger(__name__)
 
-#webpack = Webpack()
+Util.setup_logging()
+
+# webpack = Webpack()
 
 
 # Flask初始化
@@ -35,39 +40,39 @@ socketio = SocketIO(app)
 # t.start()
 
 
-option=Option()
+option = Option()
+admin = Admin()
 
-
-
-
-admin=Admin()
-
+logger.info('准备启动系统1。。。')
 
 
 @socketio.on('connect', namespace='/echo')
 def test_connect():
     emit('my event', {'data': 'Connected', 'count': 0})
     print("recv socketio connect")
+
+
 @socketio.on('my event', namespace='/echo')
 def test_message(message):
-    #emit('my event', {'data': message['data']})
+    # emit('my event', {'data': message['data']})
     print("recv socketio message")
-
 
 
 @app.route('/test', methods=['GET'])
 def test():
-    #emit('event-trade', {'data': 'test'},broadcast=True)
+    # emit('event-trade', {'data': 'test'},broadcast=True)
     socketio.emit('trade', {'custom': 'aaa'}, namespace='/echo')
     return "success"
 
-#询价
-#请求格式：
-#[{"stock":"000001.SZ","period":6,"strikePercent":1.05}]
+
+# 询价
+# 请求格式：
+# [{"stock":"000001.SZ","period":6,"strikePercent":1.05}]
 # curl -i -H "Content-Type: application/json" -X POST -d '[{"stock":"000001.SZ","period":6,"strikePercent":1.05,"amount":20}]' http://192.168.1.71:5000/option
 #
 @app.route('/enquiry', methods=['POST'])
 def enquiry():
+    logger.info(f'收到来自{request.remote_addr}的请求 {request.url}  {request.data}')
     result = {
         "errCode": 0,
         "errMsg": "success",
@@ -80,25 +85,30 @@ def enquiry():
         strikePercent = float(req['strikePct'])
         amount = float(req['amount'])
 
-        data=option.getEnquiry(stock,period,strikePercent,amount)
-        if data[0]==0:
-            enquiry=data[1]
+        data = option.getEnquiry(stock, period, strikePercent, amount)
+        if data[0] == 0:
+            enquiry = data[1]
             tms = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
-            result['data'] = ({"No":enquiry[0], "stock": stock,"period":period,"strikePct":strikePercent, "cost": enquiry[7],"maxAmount":enquiry[6],"time": tms})
+            result['data'] = (
+                {"No": enquiry[0], "stock": stock, "period": period, "strikePct": strikePercent, "cost": enquiry[7],
+                 "maxAmount": enquiry[6], "time": tms})
         else:
-            result['errCode']=data[0]
-            result['errMsg']=data[1]
+            result['errCode'] = data[0]
+            result['errMsg'] = data[1]
 
     except Exception as ex:
-         print(ex)
-         result['errCode'] = -1
-         result['errMsg'] = 'Enquiry Exception'
+        logger.error(ex)
+        result['errCode'] = -1
+        result['errMsg'] = 'Enquiry Exception'
 
     # 返回询价结果
+    logger.info(f'返回响应 {result}')
     return jsonify(result)
+
 
 @app.route('/trade', methods=['POST'])
 def trade():
+    logger.info(f'收到来自{request.remote_addr}的请求 {request.url}  {request.data}')
     result = {
         "errCode": 0,
         "errMsg": "success",
@@ -110,28 +120,30 @@ def trade():
         custom = req['custom']
         amount = float(req['amount'])
 
-        data = option.trade(custom,enquiryNo,amount)
+        data = option.trade(custom, enquiryNo, amount)
         if data[0] == 0:
             tms = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
             result['data'] = (
-            {"tradeNo": data[1],"tms":tms})
+                {"tradeNo": data[1], "tms": tms})
 
-            socketio.emit('trade', {'custom':custom ,'tradeNo':data[1]}, namespace='/echo')
+            socketio.emit('trade', {'custom': custom, 'tradeNo': data[1]}, namespace='/echo')
         else:
             result['errCode'] = data[0]
             result['errMsg'] = data[1]
 
     except Exception as ex:
-        print(ex)
+        logger.error(ex)
         result['errCode'] = -1
         result['errMsg'] = 'Trade Exception'
 
     # 返回交易结果
+    logger.info(f'返回响应 {result}')
     return jsonify(result)
 
 
 @app.route('/tradeQry', methods=['POST'])
 def tradeQry():
+    logger.info(f'收到来自{request.remote_addr}的请求 {request.url}  {request.data}')
     result = {
         "errCode": 0,
         "errMsg": "success",
@@ -142,39 +154,38 @@ def tradeQry():
         no = req['tradeNo']
         custom = req['custom']
 
-
         data = option.tradeQry(custom, no)
         if data[0] == 0:
             enquiry = data[1]
             tms = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
-            trade=data[1]
+            trade = data[1]
             result['data'] = (
-                {"status": trade[10],"tradeTms":trade[13],"tradePrice":trade[11],"tradeAmount":trade[12]})
+                {"status": trade[10], "tradeTms": trade[13], "tradePrice": trade[11], "tradeAmount": trade[12]})
         else:
             result['errCode'] = data[0]
             result['errMsg'] = data[1]
 
     except Exception as ex:
-        print(ex)
+        logger.error(ex)
         result['errCode'] = -1
         result['errMsg'] = 'TradeQry Exception'
 
     # 返回交易结果
+    logger.info(f'返回响应 {result}')
     return jsonify(result)
 
 
 @app.route('/trade/listpage', methods=['GET'])
 def tradeListPage():
-    print('/trade/listpage')
+    logger.info(f'收到来自{request.remote_addr}的请求 {request.url}  {request.data}')
 
-    page=int(request.values.get('page'))
-    size=int(request.values.get('pageSize'))
-    filters=json.loads(request.values.get('filters'))
-    ret=admin.getPagedTrade(page,size,filters)
-    jsonData=[]
+    page = int(request.values.get('page'))
+    size = int(request.values.get('pageSize'))
+    filters = json.loads(request.values.get('filters'))
+    ret = admin.getPagedTrade(page, size, filters)
+    jsonData = []
     for trade in ret[1]:
-
-        data={
+        data = {
             'tradeNo': trade[0],
             'tradingDay': trade[1],
             'custom': trade[2],
@@ -182,25 +193,26 @@ def tradeListPage():
             'period': trade[4],
             'strikePct': trade[5],
             'amount': trade[6],
-            'cost':trade[7],
-            'insertTms': trade[9].strftime( '%Y-%m-%d %H:%M:%S' ) ,
+            'cost': trade[7],
+            'insertTms': trade[9].strftime('%Y-%m-%d %H:%M:%S'),
             'status': trade[10],
             'tradePrice': trade[11],
             'tradeAmount': trade[12],
-            'tradeTms':trade[13] if trade[13]==None else trade[13].strftime( '%Y-%m-%d %H:%M:%S' ),
-            'tradeMsg':trade[14]
+            'tradeTms': trade[13] if trade[13] == None else trade[13].strftime('%Y-%m-%d %H:%M:%S'),
+            'tradeMsg': trade[14]
 
         }
 
         jsonData.append(data)
 
-    result={'total':ret[0],'trades':jsonData}
+    result = {'total': ret[0], 'trades': jsonData}
 
     return jsonify(result)
 
+
 @app.route('/enquiry/listpage', methods=['GET'])
 def enquiryListPage():
-    print('/enquiry/listpage')
+    logger.info(f'收到来自{request.remote_addr}的请求 {request.url}  {request.data}')
 
     page = int(request.values.get('page'))
     size = int(request.values.get('pageSize'))
@@ -218,7 +230,6 @@ def enquiryListPage():
             'cost': enquiry[7],
             'tms': enquiry[8].strftime('%Y-%m-%d %H:%M:%S'),
 
-
         }
         jsonData.append(data)
 
@@ -229,14 +240,16 @@ def enquiryListPage():
 
 @app.route('/editTrade', methods=['POST'])
 def editTrade():
+    logger.info(f'收到来自{request.remote_addr}的请求 {request.url}  {request.data}')
     result = {
         "errCode": 0,
         "errMsg": "success",
     }
 
-    data=request.json['params']
+    data = request.json['params']
     try:
-        admin.updateTrade(int(data['tradeNo']),data['status'],data['tradePrice'],data['tradeAmount'],f"{data['tradeDate']} {data['tradeTime']}",data['tradeMsg'])
+        admin.updateTrade(int(data['tradeNo']), data['status'], data['tradePrice'], data['tradeAmount'],
+                          f"{data['tradeDate']} {data['tradeTime']}", data['tradeMsg'])
 
 
 
@@ -245,11 +258,14 @@ def editTrade():
             "errCode": -1,
             "errMsg": "update Error",
         }
+        logger.error(ex)
     return jsonify(result)
     pass
 
+
 @app.route('/editSetting', methods=['POST'])
 def eidtSetting():
+    logger.info(f'收到来自{request.remote_addr}的请求 {request.url}  {request.data}')
     result = {
         "errCode": 0,
         "errMsg": "success",
@@ -257,7 +273,7 @@ def eidtSetting():
 
     data = request.json['params']
     try:
-        admin.updateSetting(data['name'],data['value'])
+        admin.updateSetting(data['name'], data['value'])
         option.loadSetting()
 
     except Exception as ex:
@@ -267,26 +283,22 @@ def eidtSetting():
         }
     return jsonify(result)
 
+
 @app.route('/setting/list', methods=['GET'])
 def getSettings():
-    datas=admin.getSettings()
-    settings=[]
+    logger.info(f'收到来自{request.remote_addr}的请求 {request.url}  {request.data}')
+    datas = admin.getSettings()
+    settings = []
     for data in datas:
-        settings.append({'name':data[1],'value':data[2]})
+        settings.append({'name': data[1], 'value': data[2]})
 
     result = {'settings': settings}
     return jsonify(result)
 
 
-
-
-
-
-
-
 if __name__ == "__main__":
     # 生产模式关闭debug
-    #app.run(host='0.0.0.0', debug=True)
+    # app.run(host='0.0.0.0', debug=True)
     socketio.run(app, host='0.0.0.0', port=5000)
     # from gevent import pywsgi
     # from geventwebsocket.handler import WebSocketHandler

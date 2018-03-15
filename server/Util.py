@@ -3,6 +3,10 @@ import smtplib
 from email.mime.text import MIMEText
 from email.header import Header
 
+import json
+import logging.config
+import os
+
 def getStockPrice(code):
     instrument=code.split('.')[0]
     exchange=code.split('.')[1]
@@ -47,3 +51,23 @@ def notice(context,receivers):
     smtp.sendmail(username, receivers, msg.as_string())
     smtp.quit()
     pass
+
+
+def setup_logging(
+        default_path='logging.json',
+        default_level=logging.INFO,
+        env_key='LOG_CFG'
+):
+    """Setup logging configuration
+
+    """
+    path = default_path
+    value = os.getenv(env_key, None)
+    if value:
+        path = value
+    if os.path.exists(path):
+        with open(path, 'rt') as f:
+            config = json.load(f)
+        logging.config.dictConfig(config)
+    else:
+        logging.basicConfig(level=default_level)

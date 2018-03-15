@@ -8,6 +8,7 @@ from Util import getStockPrice,SendEmail
 import rpy2.robjects as robjects
 import time
 import math
+import logging
 
 
 class Option(object):
@@ -51,19 +52,20 @@ class Option(object):
     def calOptionCost(self,code,period,strikePercent,amount):
         tms = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
         time.clock()
-        print(f'计算报价开始 {code} {period} {strikePercent}')
+        logging.info(f'计算报价开始 {code} {period} {strikePercent}')
         try:
             result = self.r.BidPrice(code,amount, period, strikePercent)
             if result[0] == 0:
                 date = time.strftime("%Y%m%d", time.localtime())
                 tmPeiod = time.strftime("%p", time.localtime())
                 self.dos.AddEnquiry(code, period, strikePercent, date, tmPeiod, round(result[1]+0.005,2), result[2])
-                print(f'计算并保持报价成功 {code} {period} {strikePercent} 期权费:{result[1]}  时间:{tms}')
+                logging.info(f'计算并保持报价成功 {code} {period} {strikePercent} 期权费:{result[1]}  时间:{tms}')
                 result=(0,"")
 
         except Exception as ex:
+            logging.error(ex)
             result=(-2,"BidPrice Exception,Please Contact Us!")
-            print(f'计算报价失败 {code} {period} {strikePercent} {ex}')
+            logging.error(f'计算报价失败 {code} {period} {strikePercent} {ex}')
 
         return result
 
@@ -122,6 +124,7 @@ class Option(object):
 
 
     def loadSetting(self):
+        logging.info('装载系统设置')
         datas=self.dos.GetSetting()
         for data in datas:
             self.setting[data[1]]=data[2]
