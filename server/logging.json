@@ -33,6 +33,15 @@
             "maxBytes": 10485760,
             "backupCount": 20,
             "encoding": "utf8"
+        },
+        "engineio_file_handler": {
+            "class": "logging.handlers.RotatingFileHandler",
+            "level": "ERROR",
+            "formatter": "simple",
+            "filename": "log/engineio.log",
+            "maxBytes": 10485760,
+            "backupCount": 20,
+            "encoding": "utf8"
         }
     },
 
@@ -40,6 +49,11 @@
         "my_module": {
             "level": "ERROR",
             "handlers": ["console"],
+            "propagate": "no"
+        },
+        "engineio":{
+            "level": "ERROR",
+            "handlers": ["engineio_file_handler"],
             "propagate": "no"
         }
     },
