@@ -8,7 +8,7 @@ class OptionDos(object):
     conn=None;
     def __init__(self):
         # Conn初始化
-        self.conn = pymssql.connect("192.168.1.10", "quant", "quant", "OptionSystem", charset='cp936')
+        self.conn = pymssql.connect("192.168.1.10", "quant", "quant", "OptionSystem", charset='utf8')
 
     def GetConn(self):
         #todo 连接状态检查
