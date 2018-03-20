@@ -4,7 +4,8 @@ import HelloWorld from '@/components/HelloWorld'
 import admin from '@/components/Admin'
 
 const enquiry = resolve => require(['@/components/Enquiry'], resolve)
-const trade = resolve => require(['@/components/Trade'], resolve)
+const qryEnquiry = resolve => require(['@/components/QryEnquiry'], resolve)
+const qryTrade = resolve => require(['@/components/QryTrade'], resolve)
 const setting = resolve => require(['@/components/Setting'], resolve)
 const monitor = resolve => require(['@/components/Monitor'], resolve)
 
@@ -24,11 +25,16 @@ export default new Router({
       name: 'enquiry',
       component: enquiry
     },
+    {
+      path: '/qryEnquiry',
+      name: 'qryEnquiry',
+      component: qryEnquiry
+    },
 
     {
-      path: '/trade',
-      name: 'tradeNew',
-      component: trade
+      path: '/qryTrade',
+      name: 'qryTrade',
+      component: qryTrade
     },
     {
       path: '/setting',

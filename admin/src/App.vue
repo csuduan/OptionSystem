@@ -9,14 +9,20 @@
           class="el-menu-vertical-demo"
           @open="handleOpen"
           @close="handleClose">
-          <el-menu-item index="/enquiry" >
-            <i class="el-icon-menu"></i>
-            <span slot="title">询价</span>
 
-          </el-menu-item>
-          <el-menu-item index="/trade" >
+
+          <el-submenu index="">
+            <template slot="title">
+              <i class="el-icon-menu"></i>
+              <span>查询</span>
+            </template>
+            <el-menu-item index="/qryEnquiry">询价查询</el-menu-item>
+            <el-menu-item index="/qryTrade">交易查询</el-menu-item>
+          </el-submenu>
+
+          <el-menu-item index="/enquiry">
             <i class="el-icon-document"></i>
-            <span slot="title">交易</span>
+            <span slot="title">询价</span>
           </el-menu-item>
 
           <el-menu-item index="/setting">
@@ -61,8 +67,9 @@
     color: #2c3e50;
     margin-top: 60px;
   }
-  .toolbar{
-    padding:10px;
+
+  .toolbar {
+    padding: 10px;
     margin: 10px 0px;
   }
 </style>

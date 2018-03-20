@@ -16,8 +16,8 @@ def getStockPrice(code):
 
     return  (float(msg[1]),float(msg[3]))
 
-def SendEmail(msg):
-    receiver = ['duanq@quantinv.com']
+def SendEmail(msg,receiver):
+    #receiver = ['duanq@quantinv.com']
     subject = '期权交易下达指令（测试）'
     smtpserver = 'smtp.126.com'
     username = 'quantinv@126.com'

@@ -1,7 +1,7 @@
 import os
 
 from Dos import OptionDos
-from Util import getStockPrice,SendEmail
+import Util
 
 #os.environ['R_HOME'] = 'C:\Program Files\R\R-3.3.3'
 #os.environ['R_USER'] = 'C:\Program Files\Anaconda3\Lib\site-packages\rpy2'
@@ -32,7 +32,7 @@ class Option(object):
             return  (-1,"Not trading time,Please try again later")
 
         #涨跌幅过大，重新计算报价
-        price=getStockPrice(stock)
+        price=Util.getStockPrice(stock)
         if abs(price[1]-price[0])/price[0]>0.05:
             ret = self.calOptionCost(stock, period, strikePercent, amount)
             if ret[0] != 0:
@@ -97,15 +97,33 @@ class Option(object):
         if amount>maxAmount:
             return (-1, "amount is too big than maxAmount !")
 
+        try:
+            result=self.r.HedgeTra(code,amount,period,strikePct)
+            volume=result[1]
+            dueDate=result[2]
+
+        except Exception as ex:
+            logging.error(ex)
+            return (-2,"HedgeTra Exception,Please Contact Us!")
+
         #交易信息入库
-        tradeNo=self.dos.AddTrade(date,custom,code,period,strikePct,amount,cost,enquiryNo)
+        tradeNo=self.dos.AddTrade(date,custom,code,period,strikePct,amount,cost,enquiryNo,volume,dueDate)
 
         #发送邮件通知
         msg=f''' 
-           tradeNo       tradingDay   code        period    strikePct    Amount      custom
-           {tradeNo}            {date}    {code}    {period}         {strikePct}        {amount}万      {custom}
+           tradeNo       tradingDay   code        period    strikePct    Amount      custom     volume      dueDate
+           {tradeNo}            {date}    {code}    {period}         {strikePct}        {amount}万      {custom}   {volume}  {dueDate}
          '''
-        #SendEmail(msg)
+
+        try:
+
+            emailReceiver=self.setting['emailReceiver']
+            if(emailReceiver!=None or emailReceiver!=''):
+                receiver=emailReceiver.split(',')
+                Util.SendEmail(msg,receiver)
+        except Exception as ex:
+            logging.error('send email error',ex)
+
 
         return (0,tradeNo)
 

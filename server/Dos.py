@@ -36,10 +36,10 @@ class OptionDos(object):
         enquiry = cursor.fetchone()
         return  enquiry
 
-    def AddTrade(self,date,custom,code,period,strikePct,amount,cost,enquiryNo):
+    def AddTrade(self,date,custom,code,period,strikePct,amount,cost,enquiryNo,volume,dueDate):
         conn = self.GetConn()
         cursor = conn.cursor()
-        sql = f"insert into Trade(tradingDay,Custom,code,Period,StrikePct,Amount,cost,EnquiryNo,insertTms,Status)  values('{date}','{custom}','{code}','{period}',{strikePct},{amount},{cost},{enquiryNo},getdate(),'UnTraded')"
+        sql = f"insert into Trade(tradingDay,Custom,code,Period,StrikePct,Amount,cost,EnquiryNo,volume,dueDate,insertTms,Status)  values('{date}','{custom}','{code}','{period}',{strikePct},{amount},{cost},{enquiryNo},{volume},'{dueDate}',getdate(),'UnTraded')"
         cursor.execute(sql)
 
         cursor.execute("SELECT SCOPE_IDENTITY()")

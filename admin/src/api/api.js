@@ -35,3 +35,12 @@ export const getSettingList = params => {
 
 export const editSetting = params => {
   return axios.post(`/api/editSetting`, { params: params }); };
+
+export const enquiry=params => {
+  return axios.post(`/api/enquiry`, params);
+};
+
+export const trade=params => {
+  return axios.post(`/api/trade`, params);
+};
+

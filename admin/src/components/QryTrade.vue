@@ -40,6 +40,10 @@
       </el-table-column>
       <el-table-column prop="amount" label="金额" min-width="80" sortable>
       </el-table-column>
+      <el-table-column prop="volume" label="手数" min-width="80" sortable>
+      </el-table-column>
+      <el-table-column prop="dueDate" label="交割日" min-width="80" sortable>
+      </el-table-column>
       <el-table-column prop="insertTms" label="下单时间" min-width="150" sortable>
       </el-table-column>
       <el-table-column prop="status" label="状态" min-width="90" sortable>

@@ -1,116 +1,204 @@
 <template>
-  <section>
-    <el-col :span="24" style="padding-bottom: 0px;">
-      <el-form :inline="true" :model="filters">
-        <el-form-item>
-          <el-radio-group v-model="mode" disabled>
-            <el-radio class="radio" :label="1" >实时</el-radio>
-            <el-radio class="radio" :label="0">历史</el-radio>
-          </el-radio-group>
+
+
+  <el-row class="tac" :gutter="20">
+    <el-col :span="6">
+      <el-form ref="myform" :model="myform" :rules="rules" label-width="80px" label-position="left">
+        <el-form-item label="股票代码" prop="stock">
+          <el-input v-model="myform.stock" auto-complete="on"></el-input>
+        </el-form-item>
+        <el-form-item label="期限" prop="period">
+          <el-input v-model="myform.period" auto-complete="on"></el-input>
+        </el-form-item>
+        <el-form-item label="名义本金" prop="amount">
+          <el-input-number v-model="myform.amount" auto-complete="off"></el-input-number>
+        </el-form-item>
+        <el-form-item label="执行比例" prop="strikePct">
+          <el-input-number v-model="myform.strikePct" auto-complete="off"></el-input-number>
         </el-form-item>
 
+        <el-form-item>
+          <el-button type="primary" @click="onSubmit">询价</el-button>
+          <el-button @click="resetForm('myform')">重置</el-button>
+        </el-form-item>
       </el-form>
     </el-col>
 
-    <!--列表-->
-    <el-table :data="datas" highlight-current-row v-loading="listLoading" @selection-change="selsChange"
-              style="width: 100%;">
-      <el-table-column type="selection" width="55">
-      </el-table-column>
-      <el-table-column prop="enquiryNo" label="编号" width="80" sortable>
-      </el-table-column>
+    <!--<el-col :span="8" :offset="3">
+      <el-input
+        type="textarea"
+        :rows="13"
+        placeholder="等待询价结果..."
+        v-model="textarea">
+      </el-input>
+    </el-col>-->
 
-      <el-table-column prop="tradingDay" label="交易日" width="100" sortable>
-      </el-table-column>
-      <el-table-column prop="tmPeriod" label="时段" width="100" sortable>
-      </el-table-column>
-      <el-table-column prop="code" label="股票" width="100" sortable>
-      </el-table-column>
-      <el-table-column prop="period" label="期限" width="80" sortable>
-      </el-table-column>
-      <el-table-column prop="strikePct" label="行权比例" width="100" sortable>
-      </el-table-column>
-      <el-table-column prop="maxAmount" label="最大金额" width="100" sortable>
-      </el-table-column>
-      <el-table-column prop="cost" label="费用" width="80" sortable>
-      </el-table-column>
-      <el-table-column prop="tms" label="时间" min-width="150" sortable>
-      </el-table-column>
+    <el-col :span="6" :offset="3">
+      <el-form ref="myresult" :model="myresult" :rules="myresultrules" label-width="80px" label-position="left">
+
+        <el-form-item label="询价时间">
+          <el-input v-model="myresult.time" auto-complete="off" disabled></el-input>
+        </el-form-item>
+        <el-form-item label="询价编号" prop="No">
+          <el-input v-model="myresult.No" auto-complete="off" disabled></el-input>
+        </el-form-item>
+        <el-form-item label="期权费">
+          <el-input-number v-model="myresult.cost" auto-complete="off" disabled></el-input-number>
+        </el-form-item>
 
 
-    </el-table>
+        <el-form-item label="客户名称" prop="custom">
+          <el-input v-model="myresult.custom" auto-complete="off"></el-input>
+        </el-form-item>
 
-    <!--工具条-->
-    <el-col :span="24" class="toolbar">
-      <el-pagination layout="prev, pager, next" @current-change="handleCurrentChange" :page-size="pageSize" :total="total"
-                     style="float:right;">
-      </el-pagination>
+        <el-form-item label="名义本金" prop="maxAmount">
+          <el-input-number v-model="myresult.maxAmount" auto-complete="off"></el-input-number>
+          <el-button type="primary" @click="order" style="float: right">下单</el-button>
+        </el-form-item>
+
+
+      </el-form>
+
     </el-col>
 
+  </el-row>
 
-
-  </section>
 </template>
 
 <script>
-  import util from '../utils/util'
-  import {getEnquiryListPage} from '../api/api';
+  import {enquiry,trade} from '../api/api';
 
 
   export default {
-    name: "enquiry",
+    name: "enquiry-oper",
     data() {
       return {
-        filters: {
-          name: ''
-        },
-        mode:1,
-        datas:[],
-        total: 0,
-        page: 1,
-        pageSize:10,
-        listLoading: false,
-        sels: [],//列表选中列
+        textarea: '',
 
+        myresult: {
+          No: '',
+          cost: '',
+          maxAmount: '',
+          time: '',
+          custom: ''
+
+        },
+
+        myresultrules: {
+
+          No: [
+            {required: true, message: '询价编号不能为空', trigger: 'blur'},
+          ],
+          maxAmount: [
+            {required: true, message: '名义本金不能为空', trigger: 'blur'},
+          ],
+          custom: [
+            {required: true, message: '客户编号不能为空', trigger: 'blur'},
+          ],
+        },
+
+        myform: {
+          stock: '',
+          period: '',
+          amount: 0,
+          strikePct: 1
+        },
+        rules: {
+
+          stock: [
+            {required: true, message: '请输入股票代码', trigger: 'blur'},
+            {min: 9, max: 9, message: '长度必须为9', trigger: 'blur'}
+          ],
+          period: [
+            {required: true, message: '请输入期限', trigger: 'blur'},
+            {min: 2, max: 3, message: '长度必须为2-3为，如1M', trigger: 'blur'}
+          ],
+          amount: [
+            {type: 'number', message: '名义本金必须为数字', trigger: 'blur'}
+          ],
+          strikePct: [
+            {type: 'number', message: '行权比例必须为数字', trigger: 'blur'}
+          ]
+
+        },
 
 
       }
     },
     methods: {
-      handleCurrentChange(val) {
-        this.page = val;
-        this.getEnquirys();
-      },
-      //获取用户列表
+      onSubmit() {
+        console.log('submit!');
+        this.textarea = ''
+        this.$refs.myform.validate((valid) => {
+          if (!valid) {
+            return false;
+          } else {
+            //验证通过
 
-      getEnquirys(){
-        let para = {
-          page: this.page,
-          pageSize:this.pageSize,
-          mode: this.mode
-        };
-        this.listLoading = true;
-        getEnquiryListPage(para).then((res) => {
-          this.total = res.data.total;
-          this.datas = res.data.enquirys;
-          this.listLoading = false;
+            enquiry(this.myform).then((res) => {
+              var data = res.data
+              this.textarea = JSON.stringify(res.data);
+              if (data['errCode'] != 0) {
+                this.$message({
+                  showClose: true,
+                  message: data['errMsg'],
+                  type: 'error'
+                })
+              } else {
+                this.myresult = Object.assign({}, data['data']);
+              }
 
 
-          //NProgress.done();
+              //NProgress.done();
+            });
+
+          }
         });
+
+
       },
-
-
-
-      selsChange: function (sels) {
-        this.sels = sels;
+      resetForm(formName) {
+        this.$refs[formName].resetFields();
       },
+      order() {
 
-    },
-    mounted() {
-      this.getEnquirys();
+        this.$refs.myresult.validate((valid) => {
+          if (!valid) {
+            return false;
+          }else {
+            var param={
+              'enquiryNo':this.myresult.No,
+              'custom':this.myresult.custom,
+              'amount':this.myresult.maxAmount
+            }
+
+            trade(param).then((res) => {
+              var data = res.data
+              this.textarea = JSON.stringify(res.data);
+              if (data['errCode'] != 0) {
+                this.$message({
+                  showClose: true,
+                  message: data['errMsg'],
+                  type: 'error'
+                })
+              } else {
+                this.$message({
+                  showClose: true,
+                  message: '下单成功，交易编号：'+data['data'].tradeNo,
+                  type: 'success'
+                })
+              }
+
+
+              //NProgress.done();
+            });
+
+
+
+          }
+        })
+      }
     }
-
   }
 </script>
 

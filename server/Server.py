@@ -160,7 +160,7 @@ def tradeQry():
             tms = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
             trade = data[1]
             result['data'] = (
-                {"status": trade[10], "tradeTms": trade[13], "tradePrice": trade[11], "tradeAmount": trade[12]})
+                {"status": trade[12], "tradeTms": trade[15], "tradePrice": trade[13], "tradeAmount": trade[14]})
         else:
             result['errCode'] = data[0]
             result['errMsg'] = data[1]
@@ -194,12 +194,14 @@ def tradeListPage():
             'strikePct': trade[5],
             'amount': trade[6],
             'cost': trade[7],
-            'insertTms': trade[9].strftime('%Y-%m-%d %H:%M:%S'),
-            'status': trade[10],
-            'tradePrice': trade[11],
-            'tradeAmount': trade[12],
-            'tradeTms': trade[13] if trade[13] == None else trade[13].strftime('%Y-%m-%d %H:%M:%S'),
-            'tradeMsg': trade[14]
+            'volume':trade[9],
+            'dueDate':trade[10],
+            'insertTms': trade[11].strftime('%Y-%m-%d %H:%M:%S'),
+            'status': trade[12],
+            'tradePrice': trade[13],
+            'tradeAmount': trade[14],
+            'tradeTms': trade[15] if trade[15] == None else trade[15].strftime('%Y-%m-%d %H:%M:%S'),
+            'tradeMsg': trade[16]
 
         }
 
