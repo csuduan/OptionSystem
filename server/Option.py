@@ -58,7 +58,7 @@ class Option(object):
             if result[0] == 0:
                 date = time.strftime("%Y%m%d", time.localtime())
                 tmPeiod = time.strftime("%p", time.localtime())
-                self.dos.AddEnquiry(code, period, strikePercent, date, tmPeiod, round(result[1]+0.005,2), result[2])
+                self.dos.AddEnquiry(code, period, strikePercent, date, tmPeiod, round(result[1]+0.00005,4), result[2])
                 logging.info(f'计算并保持报价成功 {code} {period} {strikePercent} 期权费:{result[1]}  时间:{tms}')
                 result=(0,"")
 
