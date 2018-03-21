@@ -52,8 +52,10 @@
         </el-form-item>
 
         <el-form-item label="名义本金" prop="maxAmount">
-          <el-input-number v-model="myresult.maxAmount" auto-complete="off"></el-input-number>
-          <el-button type="primary" @click="order" style="float: right">下单</el-button>
+          <div class="flex">
+            <el-input-number v-model="myresult.maxAmount" auto-complete="off"></el-input-number>
+            <el-button type="primary" @click="order" class="flex-item">下单</el-button>
+          </div>
         </el-form-item>
 
 
@@ -66,7 +68,7 @@
 </template>
 
 <script>
-  import {enquiry,trade} from '../api/api';
+  import {enquiry, trade} from '../api/api';
 
 
   export default {
@@ -165,11 +167,11 @@
         this.$refs.myresult.validate((valid) => {
           if (!valid) {
             return false;
-          }else {
-            var param={
-              'enquiryNo':this.myresult.No,
-              'custom':this.myresult.custom,
-              'amount':this.myresult.maxAmount
+          } else {
+            var param = {
+              'enquiryNo': this.myresult.No,
+              'custom': this.myresult.custom,
+              'amount': this.myresult.maxAmount
             }
 
             trade(param).then((res) => {
@@ -184,7 +186,7 @@
               } else {
                 this.$message({
                   showClose: true,
-                  message: '下单成功，交易编号：'+data['data'].tradeNo,
+                  message: '下单成功，交易编号：' + data['data'].tradeNo,
                   type: 'success'
                 })
               }
@@ -192,7 +194,6 @@
 
               //NProgress.done();
             });
-
 
 
           }
@@ -203,5 +204,13 @@
 </script>
 
 <style scoped>
+  .flex {
+    display: flex;
+    justify-content: flex-start;
+  }
+
+  .flex-item {
+    margin-left: auto;
+  }
 
 </style>
