@@ -5,10 +5,12 @@
   "author": "csuduan <csuduan@qq.com>",
   "private": true,
   "scripts": {
-    "dev": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.js",
-    "start": "npm run dev",
+    "dev-client": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.js",
+    "dev-server":"nodemon build/server.js",
+    "start":"concurrently \"npm run dev-server\" \"npm run dev-client\" ",
     "lint": "eslint --ext .js,.vue src",
-    "build": "node build/build.js"
+    "build": "node build/build.js",
+    "build1": "webpack --progress --colors"
   },
   "dependencies": {
     "axios": "^0.18.0",
@@ -16,6 +18,7 @@
     "element-ui": "^2.2.1",
     "font-awesome": "^4.7.0",
     "mockjs": "^1.0.1-beta3",
+    "nodemon": "^1.17.2",
     "socketio": "^1.0.0",
     "vue": "^2.5.2",
     "vue-router": "^3.0.1",

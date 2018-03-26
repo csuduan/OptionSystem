@@ -30,8 +30,6 @@
       </el-table-column>
       <el-table-column prop="strikePct" label="行权比例" width="100" sortable>
       </el-table-column>
-      <el-table-column prop="maxAmount" label="最大金额" width="100" sortable>
-      </el-table-column>
       <el-table-column prop="cost" label="费用" width="80" sortable>
       </el-table-column>
       <el-table-column prop="tms" label="时间" min-width="150" sortable>
