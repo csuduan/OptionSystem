@@ -92,7 +92,7 @@ def enquiry():
             enquiry = data[1]
             tms = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
             result['data'] = (
-                {"No": enquiry[0], "stock": stock, "period": period, "strikePct": strikePercent, "cost": enquiry[7],
+                {"No": enquiry[0], "stock": stock, "period": period, "strikePct": strikePercent, "cost": enquiry[6],
                   "time": tms})
         else:
             result['errCode'] = data[0]
