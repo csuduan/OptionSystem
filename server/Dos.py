@@ -14,10 +14,10 @@ class OptionDos(object):
         #todo 连接状态检查
         return  self.conn;
 
-    def AddEnquiry(self,code,period,strikePct,date,tmPeriod,cost,maxAmount):
+    def AddEnquiry(self,code,period,strikePct,date,tmPeriod,cost):
         conn=self.GetConn()
         cursor = conn.cursor()
-        sql=f"insert into Enquiry values('{date}','{tmPeriod}','{code}','{period}',{strikePct},{maxAmount},{cost},getdate())"
+        sql=f"insert into Enquiry values('{date}','{tmPeriod}','{code}','{period}',{strikePct},{cost},getdate())"
         cursor.execute(sql)
         conn.commit()
 

@@ -28,8 +28,14 @@ class Option(object):
         date = time.strftime("%Y%m%d", time.localtime())
         tm = time.strftime("%H:%M", time.localtime())
         tmPeiod = time.strftime("%p", time.localtime())
+
+
+
         if tm < self.setting['enquiryStart'] or tm > self.setting['enquiryEnd']:
             return  (-1,"Not trading time,Please try again later")
+
+        if amount<float(self.setting['minAmount']) or amount>float(self.setting['maxAmount']):
+            return (-1,"amount must between "+self.setting['minAmount'] +'-' +self.setting['maxAmount'] )
 
         #涨跌幅过大，重新计算报价
         price=Util.getStockPrice(stock)
@@ -58,7 +64,7 @@ class Option(object):
             if result[0] == 0:
                 date = time.strftime("%Y%m%d", time.localtime())
                 tmPeiod = time.strftime("%p", time.localtime())
-                self.dos.AddEnquiry(code, period, strikePercent, date, tmPeiod, round(result[1]+0.00005,4), result[2])
+                self.dos.AddEnquiry(code, period, strikePercent, date, tmPeiod, round(result[1]+0.00005,4))
                 logging.info(f'计算并保持报价成功 {code} {period} {strikePercent} 期权费:{result[1]}  时间:{tms}')
                 result=(0,"")
 
@@ -80,13 +86,17 @@ class Option(object):
         if tm < self.setting['tradeStart'] or tm > self.setting['tradeEnd']:
             return  (-1," Forbid  trade,Now")
 
+        if amount < float(self.setting['minAmount']) or amount > float(self.setting['maxAmount']):
+            return (-1, "amount must between " + self.setting['minAmount'] + '-' + self.setting['maxAmount'])
+
+
+        enquiryTradingDay=data[1]
+        enquiryTmPeroid=data[2]
         code=data[3]
         period=data[4]
         strikePct=data[5]
-        maxAmount=data[6]
-        cost=data[7]
-        enquiryTradingDay=data[1]
-        enquiryTmPeroid=data[2]
+        cost=data[6]
+
 
         date = time.strftime("%Y%m%d", time.localtime())
         tmPeriod = time.strftime("%p", time.localtime())
@@ -94,8 +104,6 @@ class Option(object):
         if date!=enquiryTradingDay  or tmPeriod!=enquiryTmPeroid:
             return (-1, "last enquiry timeout!")
 
-        if amount>maxAmount:
-            return (-1, "amount is too big than maxAmount !")
 
         try:
             result=self.r.HedgeTra(code,amount,period,strikePct)

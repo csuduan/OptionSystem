@@ -132,7 +132,7 @@ if(nrow(ST)!=0) ### ST stock ###
   if(is.na(ST[1,"REMOVE_DT"])){Error=1}
 }
 
-if(Asset>20){Error=1}
+if(Asset<50|Asset>75){Error=1}
 
 if(StrikePercent>1.03|StrikePercent<0.97){Error=1}
 

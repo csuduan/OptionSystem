@@ -10,7 +10,6 @@
 ```
 # 构建前端
 npm update
-npm run build
 ```
 
 # 运行

@@ -85,13 +85,15 @@ def enquiry():
         strikePercent = float(req['strikePct'])
         amount = float(req['amount'])
 
+
+
         data = option.getEnquiry(stock, period, strikePercent, amount)
         if data[0] == 0:
             enquiry = data[1]
             tms = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
             result['data'] = (
                 {"No": enquiry[0], "stock": stock, "period": period, "strikePct": strikePercent, "cost": enquiry[7],
-                 "maxAmount": enquiry[6], "time": tms})
+                  "time": tms})
         else:
             result['errCode'] = data[0]
             result['errMsg'] = data[1]
@@ -228,9 +230,8 @@ def enquiryListPage():
             'code': enquiry[3],
             'period': enquiry[4],
             'strikePct': enquiry[5],
-            'maxAmount': enquiry[6],
-            'cost': enquiry[7],
-            'tms': enquiry[8].strftime('%Y-%m-%d %H:%M:%S'),
+            'cost': enquiry[6],
+            'tms': enquiry[7].strftime('%Y-%m-%d %H:%M:%S'),
 
         }
         jsonData.append(data)
