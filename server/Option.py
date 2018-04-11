@@ -1,6 +1,7 @@
 import os
 
 from Dos import OptionDos
+from RiskCtrl import DayFlowCtrl
 import Util
 
 #os.environ['R_HOME'] = 'C:\Program Files\R\R-3.3.3'
@@ -16,26 +17,31 @@ class Option(object):
     期权操作
     '''
 
-    def __init__(self):
+    def __init__(self,setting):
         #OptionSystemR初始化
         self.r = robjects.r
         self.r.source("./OptionSystem.R")
         self.dos=OptionDos()
-        self.setting={}
-        self.loadSetting()
+        self.setting=setting
+        self.dayFlowCtrl=DayFlowCtrl(setting)
+        pass
 
-    def getEnquiry(self,stock,period,strikePercent,amount):
+    def getEnquiry(self,custom,stock,period,strikePercent,amount):
         date = time.strftime("%Y%m%d", time.localtime())
         tm = time.strftime("%H:%M", time.localtime())
         tmPeiod = time.strftime("%p", time.localtime())
 
 
 
-        if tm < self.setting['enquiryStart'] or tm > self.setting['enquiryEnd']:
+        if tm < self.setting.getValue('enquiryStart') or tm > self.setting.getValue('enquiryEnd'):
             return  (-1,"Not trading time,Please try again later")
 
-        if amount<float(self.setting['minAmount']) or amount>float(self.setting['maxAmount']):
-            return (-1,"amount must between "+self.setting['minAmount'] +'-' +self.setting['maxAmount'] )
+        if amount<float(self.setting.getValue('minAmount')) or amount>float(self.setting.getValue('maxAmount')):
+            return (-1,"amount must between "+self.setting.getValue('minAmount')+'-' +self.setting.getValue('maxAmount') )
+
+        #流控检测
+        if self.dayFlowCtrl.CheckFlowCtrl(custom,date)==False:
+            return (-1,'reach max DayFlow')
 
         #涨跌幅过大，重新计算报价
         price=Util.getStockPrice(stock)
@@ -75,7 +81,12 @@ class Option(object):
 
         return result
 
-    def trade(self,custom,enquiryNo,amount):
+    def trade(self, customID, enquiryNo, amount):
+
+        custom=self.dos.GetCustom(customID)
+        if custom==None:
+            return (-1, "custom not registed!")
+
         data = self.dos.GetEnquiryByNo(enquiryNo)
         if data == None or data == []:
             return  (-1, "can not find enquiry Record!")
@@ -83,11 +94,13 @@ class Option(object):
         date = time.strftime("%Y%m%d", time.localtime())
         tm = time.strftime("%H:%M", time.localtime())
         tmPeiod = time.strftime("%p", time.localtime())
-        if tm < self.setting['tradeStart'] or tm > self.setting['tradeEnd']:
+
+
+        if tm < self.setting.getValue('tradeStart') or tm > self.setting.getValue('tradeEnd'):
             return  (-1," Forbid  trade,Now")
 
-        if amount < float(self.setting['minAmount']) or amount > float(self.setting['maxAmount']):
-            return (-1, "amount must between " + self.setting['minAmount'] + '-' + self.setting['maxAmount'])
+        if amount < float(self.setting.getValue('minAmount')) or amount > float(self.setting.getValue('maxAmount')):
+            return (-1, "amount must between " + self.setting.getValue('minAmount') + '-' + self.setting.getValue('maxAmount'))
 
 
         enquiryTradingDay=data[1]
@@ -115,18 +128,18 @@ class Option(object):
             return (-2,"HedgeTra Exception,Please Contact Us!")
 
         #交易信息入库
-        tradeNo=self.dos.AddTrade(date,custom,code,period,strikePct,amount,cost,enquiryNo,volume,dueDate)
+        tradeNo=self.dos.AddTrade(date, customID, code, period, strikePct, amount, cost, enquiryNo, volume, dueDate)
 
         #发送邮件通知
-        msg=f''' 
+        msg= f''' 
            tradeNo       tradingDay   code        period    strikePct    Amount      custom     volume      dueDate
-           {tradeNo}            {date}    {code}    {period}         {strikePct}        {amount}万      {custom}   {volume}  {dueDate}
+           {tradeNo}            {date}    {code}    {period}         {strikePct}        {amount}万      {customID}   {volume}  {dueDate}
          '''
 
         try:
 
-            emailReceiver=self.setting['emailReceiver']
-            if(emailReceiver!=None or emailReceiver!=''):
+            emailReceiver=self.setting.getValue('emailReceiver')
+            if(emailReceiver!=None and emailReceiver!=''):
                 receiver=emailReceiver.split(',')
                 Util.SendEmail(msg,receiver)
         except Exception as ex:
@@ -149,11 +162,6 @@ class Option(object):
         return (0,data)
 
 
-    def loadSetting(self):
-        logging.info('装载系统设置')
-        datas=self.dos.GetSetting()
-        for data in datas:
-            self.setting[data[1]]=data[2]
 
 
 

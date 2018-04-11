@@ -1,36 +1,25 @@
-import pycurl
-import io
-from urllib.parse import urlencode
-import json
+import requests
+import urllib3
 
-url="http://192.168.1.38:5000/enquiry"
-#url='www.baidu.com'
-data={"stock":"000001.SZ","period":"30","strikePercent":" 1.02","amount":20}
+code ='000001.SZ'
+instrument = code.split('.')[0]
+exchange = code.split('.')[1]
+#header={'User-Agent': 'curl/7.51.0'}
 
-c = pycurl.Curl()
-
-
-b = io.BytesIO()
-c.setopt(c.WRITEDATA, b)
-c.setopt(c.URL, url)
-c.setopt(c.POST, 1)
-c.setopt(c.HTTPHEADER, ['Accept: application/json','Content-Type: application/json'])
-c.setopt(c.POSTFIELDS, json.dumps(data))
-
-# c.setopt(c.FOLLOWLOCATION, 1)
-# c.setopt(c.HEADER, True)
-
-for i in range(1000) :
-    c.perform()
-
-html = b.getvalue().decode('utf8')
-
-b.close()
-c.close()
-
-print(html)
+url = f"http://hq.sinajs.cn/list={exchange.lower()}{instrument}"
+print(url)
+#response = requests.get(url)
 
 
 
-#x = os.popen('Rscript Option-Price.R aa').readlines()
+http=urllib3.PoolManager()
+resp=http.request('GET',url)
+msg = str(resp.data).split(',')
+print(msg)
+
+
+
+
+
+# x = os.popen('Rscript Option-Price.R aa').readlines()
 # print(x)

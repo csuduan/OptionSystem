@@ -16,6 +16,7 @@ import Util
 
 from Option import Option
 from Admin import Admin
+from Setting import Setting
 
 import logging
 
@@ -39,8 +40,8 @@ socketio = SocketIO(app)
 # t=threading.Thread(target=webpack)
 # t.start()
 
-
-option = Option()
+setting = Setting()
+option = Option(setting)
 admin = Admin()
 
 logger.info('准备启动系统1。。。')
@@ -84,16 +85,19 @@ def enquiry():
         period = req['period']
         strikePercent = float(req['strikePct'])
         amount = float(req['amount'])
+        custom = req.get('custom')
 
+        # 匿名用户以ip代替客户名
+        if custom == None:
+            custom = request.remote_addr
 
-
-        data = option.getEnquiry(stock, period, strikePercent, amount)
+        data = option.getEnquiry(custom, stock, period, strikePercent, amount)
         if data[0] == 0:
             enquiry = data[1]
             tms = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
             result['data'] = (
                 {"No": enquiry[0], "stock": stock, "period": period, "strikePct": strikePercent, "cost": enquiry[6],
-                  "time": tms})
+                 "time": tms})
         else:
             result['errCode'] = data[0]
             result['errMsg'] = data[1]
@@ -196,8 +200,8 @@ def tradeListPage():
             'strikePct': trade[5],
             'amount': trade[6],
             'cost': trade[7],
-            'volume':trade[9],
-            'dueDate':trade[10],
+            'volume': trade[9],
+            'dueDate': trade[10],
             'insertTms': trade[11].strftime('%Y-%m-%d %H:%M:%S'),
             'status': trade[12],
             'tradePrice': trade[13],
@@ -241,6 +245,28 @@ def enquiryListPage():
     return jsonify(result)
 
 
+@app.route('/custom/list', methods=['GET'])
+def customList():
+    logger.info(f'收到来自{request.remote_addr}的请求 {request.url}  {request.data}')
+
+    page = int(request.values.get('page'))
+    size = int(request.values.get('pageSize'))
+    ret = admin.getPagedCustom(page, size)
+    jsonData = []
+    for custom in ret[1]:
+        data = {
+            'Id': custom[0],
+            'Name': custom[1],
+            'Type': custom[3],
+        }
+
+        jsonData.append(data)
+
+    result = {'total': ret[0], 'customs': jsonData}
+
+    return jsonify(result)
+
+
 @app.route('/editTrade', methods=['POST'])
 def editTrade():
     logger.info(f'收到来自{request.remote_addr}的请求 {request.url}  {request.data}')
@@ -266,8 +292,50 @@ def editTrade():
     pass
 
 
+@app.route('/custom/edit', methods=['POST'])
+def editCustom():
+    logger.info(f'收到来自{request.remote_addr}的请求 {request.url}  {request.data}')
+    result = {
+        "errCode": 0,
+        "errMsg": "success",
+    }
+
+    data = request.json['params']
+    try:
+        admin.updateCustom(data['Id'], data['Name'],data['Type'])
+
+    except Exception as ex:
+        logger.error(ex)
+        result = {
+            "errCode": -1,
+            "errMsg": str(ex),
+        }
+    return jsonify(result)
+
+
+@app.route('/custom/del', methods=['POST'])
+def delCustom():
+    logger.info(f'收到来自{request.remote_addr}的请求 {request.url}  {request.data}')
+    result = {
+        "errCode": 0,
+        "errMsg": "success",
+    }
+
+    data = request.json['params']
+    try:
+        admin.delCustom(data['Id'])
+
+    except Exception as ex:
+        logger.error(ex)
+        result = {
+            "errCode": -1,
+            "errMsg": str(ex),
+        }
+    return jsonify(result)
+
+
 @app.route('/editSetting', methods=['POST'])
-def eidtSetting():
+def updateSetting():
     logger.info(f'收到来自{request.remote_addr}的请求 {request.url}  {request.data}')
     result = {
         "errCode": 0,
@@ -277,9 +345,10 @@ def eidtSetting():
     data = request.json['params']
     try:
         admin.updateSetting(data['name'], data['value'])
-        option.loadSetting()
+        setting.loadSetting()
 
     except Exception as ex:
+        logger.error(ex)
         result = {
             "errCode": -1,
             "errMsg": "update Error",
@@ -296,6 +365,34 @@ def getSettings():
         settings.append({'name': data[1], 'value': data[2]})
 
     result = {'settings': settings}
+    return jsonify(result)
+
+
+@app.route('/adminlogin', methods=['POST'])
+def adminlogin():
+    logger.info(f'收到来自{request.remote_addr}的请求 {request.url}  {request.data}')
+    param = request.json['params']
+
+    user = param['username']
+    pwd = param['password']
+    data = admin.validUser(user, pwd)
+    result = {"code": data[0], "msg": data[1], 'user': user}
+    return jsonify(result)
+
+
+@app.route('/updatePwd', methods=['POST'])
+def changePwd():
+    logger.info(f'收到来自{request.remote_addr}的请求 {request.url}  {request.data}')
+    param = request.json['params']
+    user = param['user']
+    pwd = param['pwd']
+    try:
+        admin.updatePwd(user, pwd)
+        result = {'code': 0, 'msg': ''}
+    except Exception as ex:
+        logger.error(ex)
+        result = {'code': -1, 'msg': 'change pwd exception'}
+
     return jsonify(result)
 
 

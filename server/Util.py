@@ -1,4 +1,5 @@
 import requests
+import urllib3
 import smtplib
 from email.mime.text import MIMEText
 from email.header import Header
@@ -8,11 +9,14 @@ import logging.config
 import os
 
 def getStockPrice(code):
+
     instrument=code.split('.')[0]
     exchange=code.split('.')[1]
     url=f"http://hq.sinajs.cn/list={exchange.lower()}{instrument}"
-    response = requests.get(url)
-    msg=response.text.split(',')
+    #resp = requests.get(url)
+    http = urllib3.PoolManager()
+    resp = http.request('GET', url)
+    msg = str(resp.data).split(',')
 
     return  (float(msg[1]),float(msg[3]))
 

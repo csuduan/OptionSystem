@@ -80,6 +80,8 @@ class OptionDos(object):
         tradeCount = cursor.fetchone()
         return tradeCount[0]
 
+
+
     def GetEnquiryCount(self):
         cursor = self.GetConn().cursor()
         sql = f"select count(0) from  enquiry "
@@ -115,5 +117,72 @@ class OptionDos(object):
         sql = f"update setting set value='{value}' where name='{name}'  "
         cursor.execute(sql)
         conn.commit()
+
+    def GetCustom(self,id):
+        cursor = self.GetConn().cursor()
+        sql = f"select * from  Custom where Id='{id}' "
+        cursor.execute(sql)
+        custom = cursor.fetchone()
+        return custom
+
+    def GetCustomCount(self):
+        where = '1=1 '
+        cursor = self.GetConn().cursor()
+        sql = f"select count(0) from  custom where {where}"
+        cursor.execute(sql)
+        count = cursor.fetchone()
+        return count[0]
+
+    def GetPagedCustom(self,page,pagesize):
+        where='1=1 '
+
+
+        cursor = self.GetConn().cursor()
+        offset=(page-1)*pagesize
+        sql = f"select * from  custom where {where} order by id desc offset {offset} rows fetch next {pagesize} rows only  "
+        cursor.execute(sql)
+        datas = cursor.fetchall()
+        return datas
+
+    def UpdateCustom(self,id,name,type):
+        conn = self.GetConn()
+        cursor = conn.cursor()
+        sql = f"update custom set name='{name}',type='{type}' where id='{id}'  "
+        cursor.execute(sql)
+        conn.commit()
+
+    def AddCustom(self,id,name,type):
+        conn = self.GetConn()
+        cursor = conn.cursor()
+        sql = f"insert into custom values('{id}','{name}','123456','{type}')  "
+        cursor.execute(sql)
+        conn.commit()
+
+
+
+    def DelCustom(self,id):
+        conn = self.GetConn()
+        cursor = conn.cursor()
+        sql = f"delete custom where id='{id}' "
+        cursor.execute(sql)
+        conn.commit()
+
+    def GetUser(self,userName):
+        cursor = self.GetConn().cursor()
+        sql = f"select * from  [User] where UserName='{userName}' "
+        cursor.execute(sql)
+        user = cursor.fetchone()
+        return user
+
+    def UpdatePwd(self,userName,Pwd):
+        conn = self.GetConn()
+        cursor = conn.cursor()
+        sql = f"update [User] set pwd='{Pwd}' where UserName='{userName}'  "
+        cursor.execute(sql)
+        conn.commit()
+
+
+
+
 
 

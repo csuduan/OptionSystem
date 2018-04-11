@@ -100,6 +100,7 @@
         },
 
         myform: {
+          custom:'quantinv',
           stock: '',
           period: '',
           amount: 0,
