@@ -1,0 +1,78 @@
+2018-03-20 14:48:14,081 - root - ERROR - Error in paste("DSN=", dsn, sep = "") : object 'server' not found
+
+2018-03-20 14:48:14,081 - root - ERROR - 计算报价失败 000001.SZ 1M 1.04 Error in paste("DSN=", dsn, sep = "") : object 'server' not found
+
+2018-03-20 14:48:28,260 - root - ERROR - Error in paste("DSN=", dsn, sep = "") : object 'server' not found
+
+2018-03-20 14:48:28,260 - root - ERROR - 计算报价失败 000001.SZ 1M 1.02 Error in paste("DSN=", dsn, sep = "") : object 'server' not found
+
+2018-03-20 16:40:26,896 - __main__ - ERROR - 'stock'
+2018-03-20 16:41:49,045 - __main__ - ERROR - 'stock'
+2018-03-20 16:44:10,623 - __main__ - ERROR - 'stock'
+2018-03-20 16:44:41,989 - __main__ - ERROR - 'stock'
+2018-03-20 17:09:50,533 - root - ERROR - Error in paste("DSN=", dsn, sep = "") : object 'server' not found
+
+2018-03-20 17:09:50,535 - root - ERROR - 计算报价失败 000001.SZ 2M 1.03 Error in paste("DSN=", dsn, sep = "") : object 'server' not found
+
+2018-03-20 17:15:38,664 - root - ERROR - Error in paste("DSN=", dsn, sep = "") : object 'server' not found
+
+2018-03-20 17:15:38,666 - root - ERROR - 计算报价失败 000002.SZ 1M 1.03 Error in paste("DSN=", dsn, sep = "") : object 'server' not found
+
+2018-03-20 17:15:46,549 - root - ERROR - Error in paste("DSN=", dsn, sep = "") : object 'server' not found
+
+2018-03-20 17:15:46,551 - root - ERROR - 计算报价失败 000002.SZ 1M 1.03 Error in paste("DSN=", dsn, sep = "") : object 'server' not found
+
+2018-03-20 17:42:33,662 - __main__ - ERROR - list index out of range
+2018-03-20 17:43:48,664 - __main__ - ERROR - list index out of range
+2018-03-20 18:04:09,725 - root - ERROR - Error in as.Date(Today, "%Y%m%d") : object 'Today' not found
+
+2018-03-20 20:29:40,305 - __main__ - ERROR - 'utf-8' codec can't decode byte 0xb2 in position 105: invalid start byte
+2018-03-28 09:09:22,799 - __main__ - ERROR - float division by zero
+2018-03-28 09:09:39,899 - __main__ - ERROR - float division by zero
+2018-03-28 09:09:44,565 - __main__ - ERROR - float division by zero
+2018-03-28 09:10:58,075 - __main__ - ERROR - float division by zero
+2018-03-28 09:11:18,168 - __main__ - ERROR - float division by zero
+2018-03-28 09:13:07,339 - __main__ - ERROR - float division by zero
+2018-03-28 09:13:14,317 - __main__ - ERROR - float division by zero
+2018-03-28 09:14:12,288 - __main__ - ERROR - float division by zero
+2018-03-28 09:15:02,685 - __main__ - ERROR - float division by zero
+2018-04-10 11:12:53,046 - __main__ - ERROR - 'DayFlowCtrl' object has no attribute 'date'
+2018-04-10 11:21:30,078 - root - ERROR - Error in file(con, "r") : cannot open the connection
+
+2018-04-10 11:21:30,079 - root - ERROR - 计算报价失败 000001.SZ 1M 1.0 Error in file(con, "r") : cannot open the connection
+
+2018-04-10 11:22:54,476 - __main__ - ERROR - HTTPSConnectionPool(host='hq.sinajs.cn', port=443): Max retries exceeded with url: /list=sz000001 (Caused by SSLError(SSLError("bad handshake: SysCallError(10054, 'WSAECONNRESET')",),))
+2018-04-10 11:26:04,820 - __main__ - ERROR - HTTPSConnectionPool(host='hq.sinajs.cn', port=443): Max retries exceeded with url: /list=sz000001 (Caused by SSLError(SSLError("bad handshake: SysCallError(10054, 'WSAECONNRESET')",),))
+2018-04-10 11:27:05,324 - __main__ - ERROR - HTTPSConnectionPool(host='hq.sinajs.cn', port=443): Max retries exceeded with url: /list=sz000001 (Caused by SSLError(SSLError("bad handshake: SysCallError(10054, 'WSAECONNRESET')",),))
+2018-04-10 13:41:35,906 - __main__ - ERROR - 'Session' object has no attribute 'config'
+2018-04-11 10:39:31,503 - root - ERROR - Error in sqlQuery(wddb, sqlStr, as.is = TRUE) : 
+  first argument is not an open RODBC channel
+
+2018-04-11 10:39:31,504 - root - ERROR - 计算报价失败 000001.SZ 1M 1.0 Error in sqlQuery(wddb, sqlStr, as.is = TRUE) : 
+  first argument is not an open RODBC channel
+
+2018-04-11 10:39:44,245 - root - ERROR - Error in sqlQuery(wddb, sqlStr, as.is = TRUE) : 
+  first argument is not an open RODBC channel
+
+2018-04-11 10:39:44,245 - root - ERROR - 计算报价失败 000001.SZ 1M 1.0 Error in sqlQuery(wddb, sqlStr, as.is = TRUE) : 
+  first argument is not an open RODBC channel
+
+2018-04-11 10:45:53,257 - root - ERROR - Error in sqlQuery(wddb, sqlStr, as.is = TRUE) : 
+  first argument is not an open RODBC channel
+
+2018-04-11 10:45:53,258 - root - ERROR - 计算报价失败 000001.SZ 1M 1.0 Error in sqlQuery(wddb, sqlStr, as.is = TRUE) : 
+  first argument is not an open RODBC channel
+
+2018-04-11 10:56:43,519 - __main__ - ERROR - 'customId'
+2018-04-11 10:58:36,095 - __main__ - ERROR - '>' not supported between instances of 'int' and 'str'
+2018-04-11 10:58:50,281 - __main__ - ERROR - '>' not supported between instances of 'int' and 'str'
+2018-04-11 15:29:46,407 - __main__ - ERROR - 'Id'
+2018-04-11 15:30:41,112 - __main__ - ERROR - 'Id'
+2018-04-11 15:32:59,529 - __main__ - ERROR - 'OptionDos' object has no attribute 'AddCustom'
+2018-04-11 15:33:30,214 - __main__ - ERROR - 'OptionDos' object has no attribute 'AddCustom'
+2018-04-11 15:34:56,403 - __main__ - ERROR - 'OptionDos' object has no attribute 'AddCustom'
+2018-04-11 15:36:29,690 - __main__ - ERROR - 'OptionDos' object has no attribute 'AddCustom'
+2018-04-11 15:40:38,002 - __main__ - ERROR - 'OptionDos' object has no attribute 'AddCustom'
+2018-04-11 15:41:43,289 - __main__ - ERROR - 'OptionDos' object has no attribute 'AddCustom'
+2018-04-11 15:42:14,393 - __main__ - ERROR - 'OptionDos' object has no attribute 'AddCustom'
+2018-04-11 15:45:35,354 - __main__ - ERROR - 'OptionDos' object has no attribute 'AddCustom'
